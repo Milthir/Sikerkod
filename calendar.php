@@ -1,4 +1,5 @@
 <?php
+
 $monthNames = Array("January", "February", "March", "April", "May", "June", "July", 
 "August", "September", "October", "November", "December");
 
@@ -55,10 +56,10 @@ $maxday = date("t",$timestamp);
 $thismonth = getdate ($timestamp);
 $startday = $thismonth['wday'];
 for ($i=0; $i<($maxday+$startday); $i++) {
-    if(($i % 7) == 0 ) echo "<tr>n";
-    if($i < $startday) echo "<td></td>n";
-    else echo "<td align='center' valign='middle' height='20px' id=".$cYear.$cMonth.($i - $startday + 1).">". ($i - $startday + 1) . "</td>n";
-    if(($i % 7) == 6 ) echo "</tr>n";
+    if(($i % 7) == 0 ) echo "<tr>";
+    if($i < $startday) echo "<td></td>";
+    else echo "<td align='center' valign='middle' height='20px' id=".$cYear.$cMonth.($i - $startday + 1)." onclick='ownAlert(".($cYear.$cMonth.($i - $startday + 1)).")'>". ($i - $startday + 1) . "</td>";
+    if(($i % 7) == 6 ) echo "</tr>";
 }
 ?>
 </table>

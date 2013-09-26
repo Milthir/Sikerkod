@@ -27,6 +27,11 @@
 	
 	mh_startMessageCapture();
 	$DEL_ARRAY = array("op","type");
+function drawSomething(){
+	echo '<script>alert("Meleg")</script>';
+	return 0;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -38,7 +43,10 @@
 <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 
 <script>
-$( "#201374" ).css( "border", "3px solid red" );
+ 
+function ownAlert(id) {
+	alert("Clicked ID = " + id);
+}
 </script>
 </head>
 <body>
