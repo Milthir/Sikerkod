@@ -26,6 +26,7 @@
 	$event->setAdminMode($ADMIN_MODE);
 	
 	mh_startMessageCapture(); ?>
+	
 <!DOCTYPE html>
 <!-- saved from url=(0032)http://sikerkod.hu/?p=tanf&admin -->
 <html class="cufon-active cufon-ready"><!-- ☺ --><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -169,13 +170,45 @@
         <!-- end sidebar -->    
     </div>
     
-
+ <? startCapture(); ?>
+			<form style="display: none">{hidden_zone}
+				{field_date}
+				{field_startTime} 
+				{field_endTime}  
+				{field_name} 
+				{field_email} 
+				{field_billAddr} 
+				{field_phoneNumber} 
+			</form>
+		<?
+			$event->process();
+			$event->setTemplate(PROFILE_TEMPLATE_MAIN,new template(endCapture()));
+			//$event->setTemplate(PROFILE_TEMPLATE_FRAME, new template("{body} [if {admin_mode}]<br /><hr/>Új hozzáadása{newbody}[/if]"));
+			//$event->show();
+			$arr = $event->getProfile();
+			$days = array("Mon" => array(),
+							"Tue" => array(),
+							"Wed" => array(),
+							"Thu" => array(),
+							"Fri" => array(),
+							"Sat" => array(),
+							"Sun" => array()
+						);
+			foreach($arr as $element) {
+				$days[(string)date("D",$element['date'])] = array($element['startTime'], $element['endTime'], $element['accepted']);
+				echo '<script>alert("'.date("D",$element['date']).'")</script>';
+			}
+			print_r($days);
+			
+		?>
     <div class="right">
       <div class="unit">
 		<div class="calendar">
 			<div class="days">
 				<div class="dayNames">
-					<p>Hétfő</p>
+					<!--<p>Hétfő</p> -->
+					<p><?= date("l",$arr[0]['date'])?></p>
+					
 				</div>
 				<div class="dayNames">
 					<p>Kedd</p>
@@ -237,34 +270,37 @@
 		<div class="greySmallBox">
 		</div>
 		<p class="grey textBottom">Szabad időpont</p>
+		
+		<!--<p>
+		 <? //startCapture(); ?>
+			[if {admin_mode}]
+			<form method="post" action="">{hidden_zone}
+				Dátum: {field_date}
+				Kezdő idő: {field_startTime} <br /> 
+				Befejező idő: {field_endTime} <br /> 
+				Név: {field_name} <br />
+				Email: {field_email} <br />
+				Számlázási cím: {field_billAddr} <br />
+				Telefonszám: {field_phoneNumber} <br />
+				<input type="submit" class="submit-btn" value="Találka módosítása" size="100"/>	
+			</form>
+			<br />
+			[/if]
+		<?
+			/*$event->process();
+			//$event->setTemplate(PROFILE_TEMPLATE_MAIN,new template(endCapture()));
+			$event->setTemplate(PROFILE_TEMPLATE_FRAME, new template("{body} [if {admin_mode}]<br /><hr/>Új hozzáadása{newbody}[/if]"));
+			$event->show();*/
+		?>
+		</p> -->
 	</div>	
 	
                                                            
     </div>  
 <div class="calendarFooter">   
-      <? startCapture(); ?>
-[if {admin_mode}]
-	<form method="post" action="">{hidden_zone}
-		Dátum: {field_date} <br />
-		Kezdő idő: {field_startTime} <br /> 
-		Befejező idő: {field_endTime} <br /> 
-		Név: {field_name} <br />
-		Email: {field_email} <br />
-		Számlázási cím: {field_billAddr} <br />
-		Telefonszám: {field_phoneNumber} <br />
-		<input type="submit" class="submit-btn" value="Találka módosítása" size="100"/>	
-	</form>
-	<br />
-[/if]
-<?
-$event->process();
-$event->setTemplate(PROFILE_TEMPLATE_MAIN,new template(endCapture()));
-$event->setTemplate(PROFILE_TEMPLATE_FRAME, new template("{body} [if {admin_mode}]<br /><hr/>Új hozzáadása{newbody}[/if]"));
-$event->show();
-//$event->getProfile(null,"",0,0);
-
-
-?>
+     <?
+	 print_r($days);
+	 ?>
 </div>
 </div>
 
