@@ -2,8 +2,9 @@
 $event = new profile(0,
 					array(
 						"id" => "number",
-						"startDate" => "date",
-						"endDate" => "date"	,
+						"date" => "date",
+						"startTime" => "number",
+						"endTime" => "number",
 						"name" =>  "textfield",
 						"email" => "textfield",
 						"billAddr" => "textfield",

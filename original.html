@@ -1,31 +1,3 @@
-<?php
-	include 'assist/debug.php';
-	include 'connect.php';
-
-	include 'assist/security.php';
-	include 'assist/feedback.php';
-	include 'assist/post.php';
-	include 'assist/get.php';
-	include 'assist/string.php';
-	include 'assist/sql.php';
-	include 'assist/pic.php';
-	include 'assist/message_handler.php';
-	include 'assist/template.php';
-	include 'assist/date.php';
-	include 'assist/mailer.php';
-	include 'classes/forefather.php';
-	include 'classes/profile.php';
-	include 'classes/exports.php';
-
-
-	include 'model/event.php';
-	installLogger();
-	
-	$ADMIN_MODE = isset($_GET['admin']);
-
-	$event->setAdminMode($ADMIN_MODE);
-	
-	mh_startMessageCapture(); ?>
 <!DOCTYPE html>
 <!-- saved from url=(0032)http://sikerkod.hu/?p=tanf&admin -->
 <html class="cufon-active cufon-ready"><!-- ☺ --><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -214,9 +186,6 @@
 					</div>
 				</div>
 				<div class="column">
-				<div class="orangeBox box">
-						<p>08:00 - 09:30</p>
-					</div>
 				</div>
 				<div class="column">
 				</div>
@@ -238,34 +207,11 @@
 		</div>
 		<p class="grey textBottom">Szabad időpont</p>
 	</div>	
-	
-                                                           
+        
+      
+                                                                 
     </div>  
-<div class="calendarFooter">   
-      <? startCapture(); ?>
-[if {admin_mode}]
-	<form method="post" action="">{hidden_zone}
-		Dátum: {field_date} <br />
-		Kezdő idő: {field_startTime} <br /> 
-		Befejező idő: {field_endTime} <br /> 
-		Név: {field_name} <br />
-		Email: {field_email} <br />
-		Számlázási cím: {field_billAddr} <br />
-		Telefonszám: {field_phoneNumber} <br />
-		<input type="submit" class="submit-btn" value="Találka módosítása" size="100"/>	
-	</form>
-	<br />
-[/if]
-<?
-$event->process();
-$event->setTemplate(PROFILE_TEMPLATE_MAIN,new template(endCapture()));
-$event->setTemplate(PROFILE_TEMPLATE_FRAME, new template("{body} [if {admin_mode}]<br /><hr/>Új hozzáadása{newbody}[/if]"));
-$event->show();
-//$event->getProfile(null,"",0,0);
 
-
-?>
-</div>
 </div>
 
 <div class="intdec"></div>
@@ -393,8 +339,3 @@ $event->show();
 							</div>
 
 			</div><div class="ui-resizable-handle ui-resizable-n" style=""></div><div class="ui-resizable-handle ui-resizable-e" style=""></div><div class="ui-resizable-handle ui-resizable-s" style=""></div><div class="ui-resizable-handle ui-resizable-w" style=""></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se ui-icon-grip-diagonal-se" style="z-index: 1001;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 1002;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 1003;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 1004;"></div></div></body></html>
-
-
- 
-
-<? mh_endMessageCapture(); ?>

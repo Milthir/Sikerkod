@@ -1,5 +1,5 @@
 <?
-/* VEr.: 1.8.10
+/* VEr.: 1.8.18
    1.7
     - kép méret profilonként külön definiálható
     - ha feltölt és nem jelöl ki képet akkor nem törli a már feltöltöttet
@@ -26,6 +26,20 @@
     - show fv where záradéka megadható szimpla array-el (csak és)
    1.8.11
     - getCount és getPageCount fv bekerült a lapozás segítéséhez
+   1.8.12
+    - aposztrof és macskaköröm probléma megoldás
+   1.8.13
+    - a getProfile fv-ig le vivődött a where építése array-el
+   1.8.14
+   	- a setPrimary fv-nek átadható array is
+   1.8.15
+    - hidden_zone kiegészítve a set_argokkal, így több process is futhat egy profilosztályhoz mostantól
+   1.8.16
+    - több process is lehet egy modulhoz, setArgokkal szétválaszthatók
+   1.8.17
+    - unsafetextarea hozzáadása, nem escapeli a speciális karaktereket
+   1.8.18
+    - dateTime edit mezője rossz
 */
 define("PROFILE_TEMPLATE_MAIN",1);
 define("PROFILE_TEMPLATE_FRAME",2);
@@ -141,11 +155,11 @@ class profile extends forefather
 						
 						"textfield"=>array(	"type"=>"TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL",
 											"view"=>new template("{field_val}"),
-											"edit"=>new template('<input type="text" name="{field_name}" value="{field_val}" />')
+											"edit"=>new template('<input type="text" name="{field_name}" value="{htmlspecialchars(\'{field_val}\')}" />')
 											),
 						"widetextfield"=>array(	"type"=>"TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL",
 											"view"=>new template("{field_val}"),
-											"edit"=>new template('<input type="text" name="{field_name}" value="{field_val}" style="width:100%" />')
+											"edit"=>new template('<input type="text" name="{field_name}" value="{htmlspecialchars(\'{field_val}\')}" style="width:100%" />')
 											),
 						"email"=>array(	"type"=>"TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL",
 											"view"=>new template('<a href="mailto:{field_val}">{field_val}</a>'),
@@ -155,6 +169,11 @@ class profile extends forefather
 											"view"=>new template("{nl2br(htmlspecialchars('{field_val}'));}"),//itt a spec charst kikéne cserélni...
 											"edit"=>new template('<textarea name="{field_name}">{field_val}</textarea>')
 											),
+						"unsafetextarea"=>array(	"type"=>"TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL",
+											"view"=>new template("{nl2br('{field_val}');}"),
+											"edit"=>new template('<textarea name="{field_name}">{field_val}</textarea>')
+											),
+						
 						"number"=>array(	"type"=>"INT UNSIGNED NOT NULL",
 											"view"=>new template("{field_val}"),
 											"edit"=>new template('<input type="text" name="{field_name}" value="{field_val}" onkeypress="var charCode = (event.which) ? event.which : event.keyCode;return !(charCode > 31 && (charCode < 48 || charCode > 57));" />'),
@@ -174,7 +193,7 @@ class profile extends forefather
 											),
 						"datetime"=>array(	"type"=>"INT UNSIGNED NOT NULL",
 											"view"=>new template("{date('Y-m-d H:i.s',{field_val})}"),
-											"edit"=>new template('<input type="text" name="{field_name}" value="{date("Y-m-d",{field_val})}" />'),
+											"edit"=>new template('<input type="text" name="{field_name}" value="{date("Y-m-d H:i.s",{field_val})}" />'),
 											"process_function"=>create_function('$a,$b','return strtotime($a);'),
 											"check_function"=>isNumber,
 											"no_report_check_error"=>true
@@ -228,9 +247,13 @@ class profile extends forefather
 	{
 		$this->insert_fields = $new;
 	}	
-	function setPrimary()
+	function setPrimary($arg)
 	{
-		$this->primary = func_get_args();
+		if(is_array($arg)){
+			$this->primary = $arg;
+		}else{
+			$this->primary = func_get_args();
+		}
 	}
 	
 	function setArg($key,$val)
@@ -349,7 +372,10 @@ class profile extends forefather
 	
 	function process()
 	{
+		
+		//check the action is ok (we have to handle this)
 		if(!preg_match("/^".$this->prefix."profile_(.+)$/",getPOST('action','a'),$reg))return false;
+
 		switch($reg[1])
 		{
 			case 'mod':
@@ -366,7 +392,7 @@ class profile extends forefather
 						if(preg_match("/^(.+)".$prim_preg."$/",$key,$reg2))
 						{		
 						//	listArray($reg2);
-	
+					
 							$modkey = "";
 							for($a=2;$a<count($reg2);$a++)$modkey .= "_".$reg2[$a];
 							$mods[$modkey][$reg2[1]] = $val;
@@ -380,7 +406,13 @@ class profile extends forefather
 					$oldargs = $this->arg_sets;
 					//listArray($mods);
 					foreach($mods as $key => $val)
-					{
+					{				
+						//check if the connector data is ok
+						foreach($this->arg_sets as $arg_key => $arg_val){
+							if(isset($val[$arg_key]) && $val[$arg_key] != $arg_val){
+								return false;
+							}
+						}
 						$this->arg_sets = array_merge($val['keys'],$oldargs);
 						$ok &= $this->modArgs($val,$key);
 					}
@@ -434,19 +466,19 @@ class profile extends forefather
 	*/
 	function show($order=array(),$where="",$actPage=0,$num=0)
 	{	
-		if(is_array($where)){
-			$where = $this->buildWhereString($where);
-		}
 		//$prim_ar = array_diff($this->primary,array_keys($this->arg_sets));
 		$prim_ar = $this->primary;
 		
 		$template = $this->templates[PROFILE_TEMPLATE_MAIN]->copy();
 		
-		$def_trans =  array("admin_mode"=>$this->admin_mode,"can_mod"=>$this->admin_mode,
-						"hidden_zone"=>'<input type="hidden" name="action" value="'.$this->prefix.'profile_mod" />
-										<input type="hidden" name="prims" value="'.implode("|",$prim_ar).'" />');
+		$hidden_zone = 	'<input type="hidden" name="action" value="'.$this->prefix.'profile_mod" />'.
+						'<input type="hidden" name="prims" value="'.implode("|",$prim_ar).'" />';
+										
+		
+		$def_trans =  array("admin_mode"=>$this->admin_mode,"can_mod"=>$this->admin_mode);
 		$trans_ar = $def_trans;
-				
+									
+
 		foreach($this->fields as $name => $type)
 		{
 		
@@ -468,6 +500,7 @@ class profile extends forefather
 
 		$body = "";
 		$newbody = "";
+		
 		/*!isset($this->arg_sets[$this->auto_inc]) || $this->arg_sets[$this->auto_inc] < 0*/
 		$data = $this->getProfile($order,$where,"*",$actPage,$num);
 
@@ -480,6 +513,12 @@ class profile extends forefather
 				$user_v['field_category'] .= "_".$user_v[$val];
 			}
 			$user_v['rowid'] = $counter++; 
+			
+			$user_v['hidden_zone'] = $hidden_zone;
+			foreach($this->arg_sets as $key => $val){
+				$user_v['hidden_zone'] .= '<input type="hidden" name="'.$key.$user_v['field_category'].'" value="'.$val.'"/>';
+			}	
+			
  			$body .=$template->getTrans($user_v);
 		}
 		
@@ -493,6 +532,13 @@ class profile extends forefather
 			{
 				$trans_ar['field_category'] .= "_".($val==$this->auto_inc && !($this->arg_sets[$val])?-1:$this->arg_sets[$val]);
 			} 
+			
+			$trans_ar['hidden_zone'] = $hidden_zone;
+			foreach($this->arg_sets as $key => $val){
+				$trans_ar['hidden_zone'] .= '<input type="hidden" name="'.$key.$trans_ar['field_category'].'" value="'.$val.'"/>';
+			}	
+			
+			
 			foreach($this->fields as $key => $val)
 			{
 				if(stripos($this->types[$val]['type'],"INT") === false)$trans_ar[$key] = '';
@@ -584,6 +630,9 @@ class profile extends forefather
 
 	function getProfile($order=array(),$where="",$select="*",$actPage=0,$itemNum=0)
 	{
+		if(is_array($where)){
+			$where = $this->buildWhereString($where);
+		}
 		$orderstr = "";
 		if(is_array($order))
 		{
