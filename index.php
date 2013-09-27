@@ -169,38 +169,7 @@
         </div>
         <!-- end sidebar -->    
     </div>
-    
- <? startCapture(); ?>
-			<form style="display: none">{hidden_zone}
-				{field_date}
-				{field_startTime} 
-				{field_endTime}  
-				{field_name} 
-				{field_email} 
-				{field_billAddr} 
-				{field_phoneNumber} 
-			</form>
-		<?
-			$event->process();
-			$event->setTemplate(PROFILE_TEMPLATE_MAIN,new template(endCapture()));
-			//$event->setTemplate(PROFILE_TEMPLATE_FRAME, new template("{body} [if {admin_mode}]<br /><hr/>Új hozzáadása{newbody}[/if]"));
-			//$event->show();
-			$arr = $event->getProfile();
-			$days = array("Mon" => array(),
-							"Tue" => array(),
-							"Wed" => array(),
-							"Thu" => array(),
-							"Fri" => array(),
-							"Sat" => array(),
-							"Sun" => array()
-						);
-			foreach($arr as $element) {
-				$days[(string)date("D",$element['date'])] = array($element['startTime'], $element['endTime'], $element['accepted']);
-				echo '<script>alert("'.date("D",$element['date']).'")</script>';
-			}
-			print_r($days);
-			
-		?>
+   
     <div class="right">
       <div class="unit">
 		<div class="calendar">
@@ -229,10 +198,70 @@
 					<p>Vasárnap</p>
 				</div>
 			</div>
-			
+			 
+	<? startCapture(); ?>
+		{field_date}
+		{field_startTime} 
+		{field_endTime}  
+		{field_name} 
+		{field_email} 
+		{field_billAddr} 
+		{field_phoneNumber} 
+	<?
+		$event->process();
+		$event->setTemplate(PROFILE_TEMPLATE_MAIN,new template(endCapture()));
+		$arr = $event->getProfile();
+		$days = array(  "Mon" => array(),
+						"Tue" => array(),
+						"Wed" => array(),
+						"Thu" => array(),
+						"Fri" => array(),
+						"Sat" => array(),
+						"Sun" => array()
+					);
+		foreach($arr as $element) {
+			array_push($days[(string)date("D",$element['date'])], array($element['startTime'], $element['endTime'], $element['accepted']), $element['token']);
+		}
+		?>
 			<div class="dater">
 				<div class="column">
-					<div class="greyBox box">
+				</div>
+				<?
+					$s = "";
+					$i = 0;
+					foreach($days as $item) {
+					//echo '<script>alert("'.$s.'")</script>';
+					if(sizeof($item) > 0) {
+					
+						foreach($item as $meeting) {
+							//echo '<script>alert("'.$s.'")</script>';
+							//echo '<script>alert("'.$meeting['startTime'].'")</script>';
+							echo '<script>alert("asd")</script>';
+							$s .= '<div class="';
+							if ($meeting['accepted']) {
+								$s .= 'orangeBox box">
+								<p>'.$meeting['starTime'].':00 - '.$meeting['endTime'].':00</p>
+								</div>';
+							}
+							else {
+							$s .= 'greenBox box">
+								<p>'.$meeting['starTime'].':00 - '.$meeting['endTime'].':00</p>
+								</div>';
+							}
+						$s .= ' </div>
+								<div class="column">
+								</div>';
+						}
+					}
+					else {
+						$s .= '<div class="column">
+								</div>';
+					}
+					}
+				echo '<script>alert("'.$s.'")</script>';
+				
+				?>
+				<!--	<div class="greyBox box">
 						<p>9:00- 10:30</p>
 					</div>
 				</div>
@@ -256,7 +285,7 @@
 				<div class="column">
 				</div>
 				<div class="column">
-				</div>
+				</div> -->
 			</div>
 		</div>	
 	</div>
