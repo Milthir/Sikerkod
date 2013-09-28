@@ -226,17 +226,12 @@
 		}
 		?>
 			<div class="dater">
-				<!--<div class="column">
-				</div> -->
 				<?
 					$s = "<!-- Kezdet -->";
-					
 					foreach($days as $item) {
 						$s .= '<div class="column">';
-						
 							if(sizeof($item) > 0) {
 								foreach($item as $meeting) {
-								
 									$s .= '<div class="';
 									if ($meeting[2] == 1 ) {
 										$s .= 'orangeBox box">
@@ -255,31 +250,6 @@
 					$s .= "<!-- Vég -->";
 				echo $s;
 				?>
-				<!--	<div class="greyBox box">
-						<p>9:00- 10:30</p>
-					</div>
-				</div>
-				<div class="column">
-				</div>
-				<div class="column">
-					<div class="greenBox box">
-						<p>11:30- 12:30</p>
-					</div>
-					<div class="orangeBox box">
-						<p>14:30- 15:30</p>
-					</div>
-				</div>
-				<div class="column">
-				<div class="orangeBox box">
-						<p>08:00 - 09:30</p>
-					</div>
-				</div>
-				<div class="column">
-				</div>
-				<div class="column">
-				</div>
-				<div class="column">
-				</div> --> 
 			</div>
 		</div>	
 	</div>
