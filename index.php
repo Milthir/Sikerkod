@@ -175,9 +175,7 @@
 		<div class="calendar">
 			<div class="days">
 				<div class="dayNames">
-					<!--<p>Hétfő</p> -->
-					<p><?= date("l",$arr[0]['date'])?></p>
-					
+					<p>Hétfő</p>
 				</div>
 				<div class="dayNames">
 					<p>Kedd</p>
@@ -200,13 +198,17 @@
 			</div>
 			 
 	<? startCapture(); ?>
-		{field_date}
-		{field_startTime} 
-		{field_endTime}  
-		{field_name} 
-		{field_email} 
-		{field_billAddr} 
-		{field_phoneNumber} 
+		<form method="post" action="">{hidden_zone}
+				Dátum: {field_date} <br />
+				Kezdő idő: {field_startTime} <br /> 
+				Befejező idő: {field_endTime} <br /> 
+				Név: {field_name} <br />
+				Email: {field_email} <br />
+				Számlázási cím: {field_billAddr} <br />
+				Telefonszám: {field_phoneNumber} <br />
+				<input type="submit" class="submit-btn" value="Találka módosítása" size="100"/>	
+			</form>
+			<br />
 	<?
 		$event->process();
 		$event->setTemplate(PROFILE_TEMPLATE_MAIN,new template(endCapture()));
@@ -218,48 +220,40 @@
 						"Fri" => array(),
 						"Sat" => array(),
 						"Sun" => array()
-					);
+					); 
 		foreach($arr as $element) {
-			array_push($days[(string)date("D",$element['date'])], array($element['startTime'], $element['endTime'], $element['accepted']), $element['token']);
+			array_push($days[(string)date("D",$element['date'])], array($element['startTime'], $element['endTime'], $element['accepted'], $element['token']));
 		}
 		?>
 			<div class="dater">
-				<div class="column">
-				</div>
+				<!--<div class="column">
+				</div> -->
 				<?
-					$s = "";
-					$i = 0;
-					foreach($days as $item) {
-					//echo '<script>alert("'.$s.'")</script>';
-					if(sizeof($item) > 0) {
+					$s = "<!-- Kezdet -->";
 					
-						foreach($item as $meeting) {
-							//echo '<script>alert("'.$s.'")</script>';
-							//echo '<script>alert("'.$meeting['startTime'].'")</script>';
-							echo '<script>alert("asd")</script>';
-							$s .= '<div class="';
-							if ($meeting['accepted']) {
-								$s .= 'orangeBox box">
-								<p>'.$meeting['starTime'].':00 - '.$meeting['endTime'].':00</p>
-								</div>';
+					foreach($days as $item) {
+						$s .= '<div class="column">';
+						
+							if(sizeof($item) > 0) {
+								foreach($item as $meeting) {
+								
+									$s .= '<div class="';
+									if ($meeting[2] == 1 ) {
+										$s .= 'orangeBox box">
+										<p>'.$meeting[0].':00 - '.$meeting[1].':00</p>
+										</div>';
+									}
+									else {
+										$s .= 'greyBox box">
+										<p>'.$meeting[0].':00 - '.$meeting[1].':00</p>
+										</div>';
+									}	
+								}
 							}
-							else {
-							$s .= 'greenBox box">
-								<p>'.$meeting['starTime'].':00 - '.$meeting['endTime'].':00</p>
-								</div>';
-							}
-						$s .= ' </div>
-								<div class="column">
-								</div>';
-						}
+						$s .= "</div>";
 					}
-					else {
-						$s .= '<div class="column">
-								</div>';
-					}
-					}
-				echo '<script>alert("'.$s.'")</script>';
-				
+					$s .= "<!-- Vég -->";
+				echo $s;
 				?>
 				<!--	<div class="greyBox box">
 						<p>9:00- 10:30</p>
@@ -285,7 +279,7 @@
 				<div class="column">
 				</div>
 				<div class="column">
-				</div> -->
+				</div> --> 
 			</div>
 		</div>	
 	</div>
@@ -299,38 +293,20 @@
 		<div class="greySmallBox">
 		</div>
 		<p class="grey textBottom">Szabad időpont</p>
-		
-		<!--<p>
-		 <? //startCapture(); ?>
-			[if {admin_mode}]
-			<form method="post" action="">{hidden_zone}
-				Dátum: {field_date}
-				Kezdő idő: {field_startTime} <br /> 
-				Befejező idő: {field_endTime} <br /> 
-				Név: {field_name} <br />
-				Email: {field_email} <br />
-				Számlázási cím: {field_billAddr} <br />
-				Telefonszám: {field_phoneNumber} <br />
-				<input type="submit" class="submit-btn" value="Találka módosítása" size="100"/>	
-			</form>
-			<br />
-			[/if]
+		<br />
+		<p>
 		<?
-			/*$event->process();
-			//$event->setTemplate(PROFILE_TEMPLATE_MAIN,new template(endCapture()));
-			$event->setTemplate(PROFILE_TEMPLATE_FRAME, new template("{body} [if {admin_mode}]<br /><hr/>Új hozzáadása{newbody}[/if]"));
-			$event->show();*/
+		if ($ADMIN_MODE) {
+			//$event->setTemplate(PROFILE_TEMPLATE_FRAME, new template("{body} <br /><hr/>Új hozzáadása{newbody}"));
+			$event->show();
+			}
 		?>
-		</p> -->
+		</p> 
 	</div>	
 	
                                                            
-    </div>  
-<div class="calendarFooter">   
-     <?
-	 print_r($days);
-	 ?>
-</div>
+    <!-- </div> -->  
+
 </div>
 
 <div class="intdec"></div>
