@@ -212,7 +212,7 @@
 	<?
 		$event->process();
 		$event->setTemplate(PROFILE_TEMPLATE_MAIN,new template(endCapture()));
-		$arr = $event->getProfile();
+		$arr = $event->getProfileView();
 		$days = array(  "Mon" => array(),
 						"Tue" => array(),
 						"Wed" => array(),
@@ -221,8 +221,10 @@
 						"Sat" => array(),
 						"Sun" => array()
 					); 
+					
 		foreach($arr as $element) {
 			array_push($days[(string)date("D",$element['date'])], array($element['startTime'], $element['endTime'], $element['accepted'], $element['token']));
+			echo '<script>alert("'.date("D",$element['date']).'");</script>';
 		}
 		?>
 			<div class="dater">
@@ -235,12 +237,12 @@
 									$s .= '<div class="';
 									if ($meeting[2] == 1 ) {
 										$s .= 'orangeBox box">
-										<p>'.$meeting[0].':00 - '.$meeting[1].':00</p>
+										<p>'.$meeting[0].' - '.$meeting[1].'</p>
 										</div>';
 									}
 									else {
 										$s .= 'greyBox box">
-										<p>'.$meeting[0].':00 - '.$meeting[1].':00</p>
+										<p>'.$meeting[0].' - '.$meeting[1].'</p>
 										</div>';
 									}	
 								}
@@ -267,7 +269,8 @@
 		<p>
 		<?
 		if ($ADMIN_MODE) {
-			//$event->setTemplate(PROFILE_TEMPLATE_FRAME, new template("{body} <br /><hr/>Új hozzáadása{newbody}"));
+			print_r($arr);
+			$event->setArg('id',-1);
 			$event->show();
 			}
 		?>

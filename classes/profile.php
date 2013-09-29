@@ -1,5 +1,5 @@
 <?
-/* VEr.: 1.8.18
+/* VEr.: 1.8.19
    1.7
     - kép méret profilonként külön definiálható
     - ha feltölt és nem jelöl ki képet akkor nem törli a már feltöltöttet
@@ -40,6 +40,8 @@
     - unsafetextarea hozzáadása, nem escapeli a speciális karaktereket
    1.8.18
     - dateTime edit mezője rossz
+   1.8.19
+    - új építőkocka daytime (óra és perc)
 */
 define("PROFILE_TEMPLATE_MAIN",1);
 define("PROFILE_TEMPLATE_FRAME",2);
@@ -195,6 +197,13 @@ class profile extends forefather
 											"view"=>new template("{date('Y-m-d H:i.s',{field_val})}"),
 											"edit"=>new template('<input type="text" name="{field_name}" value="{date("Y-m-d H:i.s",{field_val})}" />'),
 											"process_function"=>create_function('$a,$b','return strtotime($a);'),
+											"check_function"=>isNumber,
+											"no_report_check_error"=>true
+											),
+						"daytime"=>array(	"type"=>"INT UNSIGNED NOT NULL",
+											"view"=>new template("{date('H:i',{{field_val}+23*3600})}"),
+											"edit"=>new template('<input type="text" name="{field_name}" value="{date("H:i",{field_val}+23*3600)}" />'),
+											"process_function"=>create_function('$a,$b','return strtotime("1970-01-02 ".$a)-23*3600;'),
 											"check_function"=>isNumber,
 											"no_report_check_error"=>true
 											),
