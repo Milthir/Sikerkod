@@ -212,9 +212,9 @@
 	<?
 		$event->process();
 		$event->setTemplate(PROFILE_TEMPLATE_MAIN,new template(endCapture()));
-		//$arr = $event->getProfileView();
-		$arr = $event->getProfileView(array("date" => "ASC", "startTime" => "ASC"));
-		/*$days = array(  "Mon" => array(),
+		$arr = $event->getProfileView();
+		//$arr = $event->getProfileView(array("date" => "ASC", "startTime" => "ASC"));
+		$days = array(  "Mon" => array(),
 						"Tue" => array(),
 						"Wed" => array(),
 						"Thu" => array(),
@@ -225,12 +225,12 @@
 					
 		foreach($arr as $element) {
 			array_push($days[(string)date("D",$element['date'])], array($element['startTime'], $element['endTime'], $element['accepted'], $element['token']));
-			echo '<script>alert("'.date("D",$element['date']).'");</script>';
-		}*/
+			//echo '<script>alert("'.date("D",$element['date']).'");</script>';
+		}
 		?>
-			<div class="dater">
+			<div class="dater" style="position:relative; ">
 				<?
-					$day = date("D",$arr[0]['date']);
+				/*	$day = date("D",$arr[0]['date']);
 					echo '<div class="column">';
 					$days = array(  "Mon",
 						"Tue" ,
@@ -243,7 +243,7 @@
 					$j = 0;
 					for($i = 0; $i < sizeof($arr);) {
 					$date = new DateTime($arr[$i]['date']);
-						if ($days[$j] == date("D",$date->getTimestamp())/*date("D",$arr[$i]['date'])*/ ) {
+						if ($days[$j] == date("D",$date->getTimestamp())/*date("D",$arr[$i]['date']) ) {
 									if ($arr[$i]['accepted'] == 1 ) {
 										echo '<div class="orangeBox box">
 										<p>'.$arr[$i]['startTime'].' - '.$arr[$i]['endTime'].'</p>
@@ -269,22 +269,21 @@
 						echo '</div>';
 					}
 					
-					echo '</div>';
+					echo '</div>';*/
 				
 				
-					/*$s = "<!-- Kezdet -->";
+					$s = "<!-- Kezdet -->";
 					foreach($days as $item) {
 						$s .= '<div class="column">';
 							if(sizeof($item) > 0) {
 								foreach($item as $meeting) {
-									$s .= '<div class="';
 									if ($meeting[2] == 1 ) {
-										$s .= 'orangeBox box">
+										$s .= '<div class="orangeBox box" style="position:absolute; top:'.(456 / 24) * $meeting[0].'; height:'.((($meeting[1] - $meeting[2]) * (456 / 24)) / 3).'px;">
 										<p>'.$meeting[0].' - '.$meeting[1].'</p>
 										</div>';
 									}
 									else {
-										$s .= 'greyBox box">
+										$s .= '<div class="greyBox box" style="position:absolute; top:'.floor((477 / 24) * $meeting[0]).'px; height='.((($meeting[1] - $meeting[2]) * (477 / 24)) / 3).'px;">
 										<p>'.$meeting[0].' - '.$meeting[1].'</p>
 										</div>';
 									}	
@@ -293,7 +292,7 @@
 						$s .= "</div>";
 					}
 					$s .= "<!-- Vég -->";
-				echo $s; */ 
+				echo $s;
 				?>
 			</div>
 		</div>	
