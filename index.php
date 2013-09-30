@@ -212,8 +212,9 @@
 	<?
 		$event->process();
 		$event->setTemplate(PROFILE_TEMPLATE_MAIN,new template(endCapture()));
-		$arr = $event->getProfileView();
-		$days = array(  "Mon" => array(),
+		//$arr = $event->getProfileView();
+		$arr = $event->getProfileView(array("date" => "ASC", "startTime" => "ASC"));
+		/*$days = array(  "Mon" => array(),
 						"Tue" => array(),
 						"Wed" => array(),
 						"Thu" => array(),
@@ -225,11 +226,53 @@
 		foreach($arr as $element) {
 			array_push($days[(string)date("D",$element['date'])], array($element['startTime'], $element['endTime'], $element['accepted'], $element['token']));
 			echo '<script>alert("'.date("D",$element['date']).'");</script>';
-		}
+		}*/
 		?>
 			<div class="dater">
 				<?
-					$s = "<!-- Kezdet -->";
+					$day = date("D",$arr[0]['date']);
+					echo '<div class="column">';
+					$days = array(  "Mon",
+						"Tue" ,
+						"Wed",
+						"Thu",
+						"Fri",
+						"Sat",
+						"Sun"
+					); 
+					$j = 0;
+					for($i = 0; $i < sizeof($arr);) {
+					$date = new DateTime($arr[$i]['date']);
+						if ($days[$j] == date("D",$date->getTimestamp())/*date("D",$arr[$i]['date'])*/ ) {
+									if ($arr[$i]['accepted'] == 1 ) {
+										echo '<div class="orangeBox box">
+										<p>'.$arr[$i]['startTime'].' - '.$arr[$i]['endTime'].'</p>
+										</div>';
+									}
+									else {
+										echo '<div class="greyBox box">
+										<p>'.$arr[$i]['startTime'].' - '.$arr[$i]['endTime'].'</p>
+										</div>';
+									}	
+									$i++;
+						
+						}
+						else {
+							$j++;
+							echo '</div>';
+							echo '<div class="column">';
+						}
+					}
+					//echo '</div>';
+					for($j; $j < sizeof($days); $j++) {
+						echo '<div class="column">';
+						echo '</div>';
+					}
+					
+					echo '</div>';
+				
+				
+					/*$s = "<!-- Kezdet -->";
 					foreach($days as $item) {
 						$s .= '<div class="column">';
 							if(sizeof($item) > 0) {
@@ -250,11 +293,12 @@
 						$s .= "</div>";
 					}
 					$s .= "<!-- Vég -->";
-				echo $s;
+				echo $s; */ 
 				?>
 			</div>
 		</div>	
 	</div>
+	
 	<div class="calendarFooter">
 		<div class="orangeSmallBox">
 		</div>
@@ -269,8 +313,8 @@
 		<p>
 		<?
 		if ($ADMIN_MODE) {
-			print_r($arr);
-			$event->setArg('id',-1);
+			//print_r($arr);
+			//$event->setArg('id',-1);
 			$event->show();
 			}
 		?>
